@@ -2,9 +2,12 @@ package enjoytoday.com;
 
 import android.app.Activity;
 
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.Typeface;
+import android.hardware.camera2.CameraAccessException;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -27,6 +30,7 @@ public class MainActivity extends Activity {
     private TextView timerTextView;
     private ImageView controlImageView;
     private Typeface typeface;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +40,10 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         initViews();
         MobclickAgent.setScenarioType(this, MobclickAgent.EScenarioType.E_UM_NORMAL);
+        flashLight= FlashLightFactory.creatFlashLight();
+        flashLight.turnNormalLightOn(this);
+        sharedPreferences= PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences.edit().putBoolean("flash_mode",true).commit();
 
     }
 
@@ -46,7 +54,6 @@ public class MainActivity extends Activity {
     private void initViews(){
         timerTextView= (TextView) this.findViewById(R.id.timer);
         controlImageView= (ImageView) this.findViewById(R.id.switcher);
-        flashLight= FlashLightFactory.creatFlashLight();
         typeface= Typeface.createFromAsset(this.getAssets(),"fonts/timer.ttf");
         timerTextView.setTypeface(typeface);
 
@@ -70,15 +77,6 @@ public class MainActivity extends Activity {
 
 
     /**
-     * 切换flashlight.
-     */
-    private void switchFlashLight(){
-
-
-    }
-
-
-    /**
      * open/close flashlight
      * @param view
      */
@@ -91,7 +89,13 @@ public class MainActivity extends Activity {
         animationSet.addAnimation(scaleAnimation);
         //将AlphaAnimation这个已经设置好的动画添加到 AnimationSet中
         controlImageView.startAnimation(animationSet);
-        switchFlashLight();
+        if (flashLight!=null){
+            try {
+                flashLight.switchFlashLight(MainActivity.this);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
     }
 

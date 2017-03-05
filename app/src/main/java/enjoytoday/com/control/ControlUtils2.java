@@ -2,6 +2,7 @@ package enjoytoday.com.control;
 
 import android.content.Context;
 import android.hardware.Camera;
+import android.hardware.Camera.*;
 import android.hardware.camera2.CameraAccessException;
 import android.util.Log;
 import android.widget.Toast;
@@ -30,7 +31,7 @@ public class ControlUtils2 extends FlashLight {
                 camera = Camera.open();
             }
         }
-        Camera.Parameters parameters = camera.getParameters();
+       Parameters parameters = camera.getParameters();
         if (parameters == null) {
             Toast.makeText(context,"Current Camera settings is not support .",Toast.LENGTH_LONG).show();
             LogUtils.setDebug("Current Camera settings is not support .");
@@ -44,7 +45,7 @@ public class ControlUtils2 extends FlashLight {
             LogUtils.setDebug("Current Camera flash is not support .");
             return;
         }
-        if (!Camera.Parameters.FLASH_MODE_OFF.equals(flashMode)) {
+        if (!Parameters.FLASH_MODE_OFF.equals(flashMode)) {
             // Turn off the flash
             if (flashModes.contains(Camera.Parameters.FLASH_MODE_OFF)) {
                 parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
@@ -68,7 +69,7 @@ public class ControlUtils2 extends FlashLight {
                 camera = Camera.open();
             }
         }
-        Camera.Parameters parameters = camera.getParameters();
+        Parameters parameters = camera.getParameters();
         if (parameters == null) {
             Toast.makeText(context,"Current Camera settings is not support .",Toast.LENGTH_LONG).show();
             LogUtils.setDebug("Current Camera settings is not support .");
@@ -84,8 +85,8 @@ public class ControlUtils2 extends FlashLight {
         }
         if (!Camera.Parameters.FLASH_MODE_OFF.equals(flashMode)) {
             // Turn off the flash
-            if (flashModes.contains(Camera.Parameters.FLASH_MODE_OFF)) {
-                parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+            if (flashModes.contains(Parameters.FLASH_MODE_OFF)) {
+                parameters.setFlashMode(Parameters.FLASH_MODE_OFF);
                 camera.setParameters(parameters);
             } else {
                 Log.e(TAG, "FLASH_MODE_OFF not supported");
@@ -103,6 +104,20 @@ public class ControlUtils2 extends FlashLight {
             }else {
                 camera = Camera.open();
             }
+        }
+
+       Parameters parameters=camera.getParameters();
+        if (parameters == null) {
+            Toast.makeText(context,"Current Camera settings is not support .",Toast.LENGTH_LONG).show();
+            LogUtils.setDebug("Current Camera settings is not support .");
+            return;
+        }
+        String mode=parameters.getFlashMode();
+
+        if (mode.equals(Parameters.FLASH_MODE_OFF)){
+            this.turnNormalLightOn(context);
+        }else if (mode.equals(Parameters.FLASH_MODE_ON)){
+            this.turnLightOff(context);
         }
     }
 }
