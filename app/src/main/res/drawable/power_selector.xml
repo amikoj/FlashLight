@@ -1,17 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-
-
-    <!--<item android:state_selected="true">-->
-        <!--<shape android:shape="oval">-->
-            <!--<gradient android:angle="45"-->
-                <!--android:endColor="#FFF"-->
-                <!--android:centerColor="#aaa"-->
-                <!--android:startColor="#000" />-->
-            <!--&lt;!&ndash;<size android:height="120dp" android:width="120dp" />&ndash;&gt;-->
-        <!--</shape>-->
-    <!--</item>-->
     <item android:state_pressed="true">
         <shape android:shape="oval">
 
@@ -21,7 +10,6 @@
                 android:endColor="#888"
                 android:startColor="#C6CFCE"
               />
-            <!--<size android:height="120dp" android:width="120dp" />-->
         </shape>
     </item>
     <item>
@@ -30,7 +18,6 @@
                 android:angle="0"
                 android:endColor="#4444"
                 android:startColor="#000"  />
-            <!--<size android:height="120dp" android:width="120dp" />-->
         </shape>
     </item>
 

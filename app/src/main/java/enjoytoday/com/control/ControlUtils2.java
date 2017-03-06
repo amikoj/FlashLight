@@ -1,9 +1,11 @@
 package enjoytoday.com.control;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.hardware.Camera;
 import android.hardware.Camera.*;
 import android.hardware.camera2.CameraAccessException;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -19,6 +21,7 @@ import enjoytoday.com.LogUtils;
 public class ControlUtils2 extends FlashLight {
 
     private static Camera camera;
+    private SharedPreferences sharedPreferences;
 
     @Override
    public void turnNormalLightOn(Context context) {
@@ -37,6 +40,11 @@ public class ControlUtils2 extends FlashLight {
                     return;
                 }
             }
+        }
+
+
+        if (sharedPreferences==null){
+            sharedPreferences= PreferenceManager.getDefaultSharedPreferences(context);
         }
 
         Parameters parameters = camera.getParameters();
@@ -59,6 +67,7 @@ public class ControlUtils2 extends FlashLight {
                 parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
                 camera.setParameters(parameters);
                 camera.startPreview();
+                sharedPreferences.edit().putBoolean("flash_mode",true).commit();
             } else {
                 Log.e(TAG, "FLASH_MODE_OFF not supported");
             }
@@ -86,6 +95,11 @@ public class ControlUtils2 extends FlashLight {
             }
         }
 
+
+        if (sharedPreferences==null){
+            sharedPreferences= PreferenceManager.getDefaultSharedPreferences(context);
+        }
+
         Parameters parameters = camera.getParameters();
         if (parameters == null) {
             Toast.makeText(context,"Current Camera settings is not support .",Toast.LENGTH_LONG).show();
@@ -105,8 +119,8 @@ public class ControlUtils2 extends FlashLight {
             if (flashModes.contains(Parameters.FLASH_MODE_OFF)) {
                 parameters.setFlashMode(Parameters.FLASH_MODE_OFF);
                 camera.setParameters(parameters);
-//                camera.stopPreview();
                 camera.release();
+                sharedPreferences.edit().putBoolean("flash_mode",false).commit();
                 camera=null;
             } else {
                 Log.e(TAG, "FLASH_MODE_OFF not supported");
