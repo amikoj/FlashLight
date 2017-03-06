@@ -75,6 +75,7 @@
 
         <ImageView
             android:id="@+id/switcher"
+            android:background="@drawable/power_selector"
             android:src="@drawable/power"
             android:onClick="click"
             android:layout_width="wrap_content"

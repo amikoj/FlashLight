@@ -8,6 +8,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import enjoytoday.com.LogUtils;
 
@@ -21,17 +22,24 @@ public class ControlUtils2 extends FlashLight {
 
     @Override
    public void turnNormalLightOn(Context context) {
-
         if (camera==null ){
-            if (Camera.open()==null){
-                Toast.makeText(context,"camera can not open,please push this error to MessageCenter .",Toast.LENGTH_LONG).show();
-                LogUtils.setDebug("camera can not open !");
-                return;
-            }else {
-                camera = Camera.open();
+            try{
+                camera=Camera.open();
+            }catch (Exception e){
+                e.printStackTrace();
+                LogUtils.setDebug("Camera open non parameters failed.");
+                try {
+                    camera=Camera.open(Camera.getNumberOfCameras()-1);
+                }catch (Exception e1){
+                    e1.printStackTrace();
+                    Toast.makeText(context,"Camera access is occupied by other applications, can not open！",Toast.LENGTH_LONG).show();
+                    LogUtils.setDebug("Camera open one parameters failed. Camera can not open.");
+                    return;
+                }
             }
         }
-       Parameters parameters = camera.getParameters();
+
+        Parameters parameters = camera.getParameters();
         if (parameters == null) {
             Toast.makeText(context,"Current Camera settings is not support .",Toast.LENGTH_LONG).show();
             LogUtils.setDebug("Current Camera settings is not support .");
@@ -45,11 +53,12 @@ public class ControlUtils2 extends FlashLight {
             LogUtils.setDebug("Current Camera flash is not support .");
             return;
         }
-        if (!Parameters.FLASH_MODE_OFF.equals(flashMode)) {
-            // Turn off the flash
-            if (flashModes.contains(Camera.Parameters.FLASH_MODE_OFF)) {
-                parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+        if (!Parameters.FLASH_MODE_TORCH.equals(flashMode)) {
+            // Turn on the flash
+            if (flashModes.contains(Parameters.FLASH_MODE_TORCH)) {
+                parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
                 camera.setParameters(parameters);
+                camera.startPreview();
             } else {
                 Log.e(TAG, "FLASH_MODE_OFF not supported");
             }
@@ -61,14 +70,22 @@ public class ControlUtils2 extends FlashLight {
     public  void turnLightOff(Context context) {
 
         if (camera==null ){
-            if (Camera.open()==null){
-                Toast.makeText(context,"camera can not open,please push this error to MessageCenter .",Toast.LENGTH_LONG).show();
-                LogUtils.setDebug("camera can not open !");
-                return;
-            }else {
-                camera = Camera.open();
+            try{
+                camera=Camera.open();
+            }catch (Exception e){
+                e.printStackTrace();
+                LogUtils.setDebug("Camera open non parameters failed.");
+                try {
+                    camera=Camera.open(Camera.getNumberOfCameras()-1);
+                }catch (Exception e1){
+                    e1.printStackTrace();
+                    Toast.makeText(context,"Camera access is occupied by other applications, can not open！",Toast.LENGTH_LONG).show();
+                    LogUtils.setDebug("Camera open one parameters failed. Camera can not open.");
+                    return;
+                }
             }
         }
+
         Parameters parameters = camera.getParameters();
         if (parameters == null) {
             Toast.makeText(context,"Current Camera settings is not support .",Toast.LENGTH_LONG).show();
@@ -88,6 +105,9 @@ public class ControlUtils2 extends FlashLight {
             if (flashModes.contains(Parameters.FLASH_MODE_OFF)) {
                 parameters.setFlashMode(Parameters.FLASH_MODE_OFF);
                 camera.setParameters(parameters);
+//                camera.stopPreview();
+                camera.release();
+                camera=null;
             } else {
                 Log.e(TAG, "FLASH_MODE_OFF not supported");
             }
@@ -97,12 +117,19 @@ public class ControlUtils2 extends FlashLight {
     @Override
     public void switchFlashLight(Context context) throws CameraAccessException {
         if (camera==null ){
-            if (Camera.open()==null){
-                Toast.makeText(context,"camera can not open,please push this error to MessageCenter .",Toast.LENGTH_LONG).show();
-                LogUtils.setDebug("camera can not open !");
-                return;
-            }else {
-                camera = Camera.open();
+            try{
+                camera=Camera.open();
+            }catch (Exception e){
+                e.printStackTrace();
+                LogUtils.setDebug("Camera open non parameters failed.");
+                try {
+                    camera=Camera.open(Camera.getNumberOfCameras()-1);
+                }catch (Exception e1){
+                    e1.printStackTrace();
+                    Toast.makeText(context,"Camera access is occupied by other applications, can not open！",Toast.LENGTH_LONG).show();
+                    LogUtils.setDebug("Camera open one parameters failed. Camera can not open.");
+                    return;
+                }
             }
         }
 
@@ -114,9 +141,10 @@ public class ControlUtils2 extends FlashLight {
         }
         String mode=parameters.getFlashMode();
 
+
         if (mode.equals(Parameters.FLASH_MODE_OFF)){
             this.turnNormalLightOn(context);
-        }else if (mode.equals(Parameters.FLASH_MODE_ON)){
+        }else if (mode.equals(Parameters.FLASH_MODE_TORCH)){
             this.turnLightOff(context);
         }
     }

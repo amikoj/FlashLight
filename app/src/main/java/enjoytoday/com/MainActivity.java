@@ -82,13 +82,13 @@ public class MainActivity extends Activity {
      */
     public void click(View view){
 
-        AnimationSet animationSet = new AnimationSet(true);
-        ScaleAnimation scaleAnimation = new ScaleAnimation(1,0.9f,1,0.9f,
-                Animation.RELATIVE_TO_SELF,0.9f,Animation.RELATIVE_TO_SELF,0.9f);
-        scaleAnimation.setDuration(200);
-        animationSet.addAnimation(scaleAnimation);
-        //将AlphaAnimation这个已经设置好的动画添加到 AnimationSet中
-        controlImageView.startAnimation(animationSet);
+//        AnimationSet animationSet = new AnimationSet(true);
+//        ScaleAnimation scaleAnimation = new ScaleAnimation(1,0.9f,1,0.9f,
+//                Animation.RELATIVE_TO_SELF,0.9f,Animation.RELATIVE_TO_SELF,0.9f);
+//        scaleAnimation.setDuration(200);
+//        animationSet.addAnimation(scaleAnimation);
+//        //将AlphaAnimation这个已经设置好的动画添加到 AnimationSet中
+//        controlImageView.startAnimation(animationSet);
         if (flashLight!=null){
             try {
                 flashLight.switchFlashLight(MainActivity.this);
@@ -99,6 +99,14 @@ public class MainActivity extends Activity {
 
     }
 
+
+    @Override
+    protected void onDestroy() {
+        if (flashLight!=null){
+            flashLight.turnLightOff(this);
+        }
+        super.onDestroy();
+    }
 }
 
 
