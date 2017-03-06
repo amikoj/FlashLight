@@ -38,6 +38,8 @@ public class ControlUtils1 extends FlashLight {
             sharedPreferences= PreferenceManager.getDefaultSharedPreferences(context);
         }
 
+
+
         try {
             if (cameraCharacteristics==null){
                 cameraCharacteristics=  cameraManager.getCameraCharacteristics(CameraCharacteristics.LENS_FACING_FRONT+"");
@@ -47,6 +49,10 @@ public class ControlUtils1 extends FlashLight {
 
             if (isSupport) {
                 cameraManager.setTorchMode(CameraCharacteristics.LENS_FACING_FRONT + "", true);
+                if (this.lambStateChangeListener!=null){
+                    LogUtils.setDebug("get lambestateChangeListener state=1");
+                    this.lambStateChangeListener.onStateChanged(1,this);
+                }
                 sharedPreferences.edit().putBoolean("flash_mode",true).commit();
             }else {
                 LogUtils.setDebug("this devices is not support flashlight.");
@@ -75,6 +81,10 @@ public class ControlUtils1 extends FlashLight {
             isSupport=cameraCharacteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
             if (isSupport) {
                 cameraManager.setTorchMode(CameraCharacteristics.LENS_FACING_FRONT + "", false);
+                if (this.lambStateChangeListener!=null){
+                    LogUtils.setDebug("get lambestateChangeListener state=0");
+                    this.lambStateChangeListener.onStateChanged(0,this);
+                }
                 sharedPreferences.edit().putBoolean("flash_mode",false).commit();
             }else {
                 LogUtils.setDebug("not need close flashlight.");
@@ -95,7 +105,6 @@ public class ControlUtils1 extends FlashLight {
         }
 
       CameraCharacteristics cameraCharacteristics=  cameraManager.getCameraCharacteristics(CameraCharacteristics.LENS_FACING_FRONT+"");
-        Log.e("switchFlashLight","cameracharacteristics:"+cameraCharacteristics.toString());
 
        boolean isSupport   = cameraCharacteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
 

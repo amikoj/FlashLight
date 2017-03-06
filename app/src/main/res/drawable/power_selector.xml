@@ -3,8 +3,6 @@
 
     <item android:state_pressed="true">
         <shape android:shape="oval">
-
-
             <gradient
                 android:angle="0"
                 android:endColor="#888"
@@ -20,59 +18,5 @@
                 android:startColor="#000"  />
         </shape>
     </item>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <!--<item-->
-        <!--android:state_pressed="true"-->
-        <!--android:drawable="@drawable/power"-->
-        <!--&gt;-->
-
-        <!--<shape>-->
-
-            <!--<size android:height="80dp"-->
-                <!--android:width="80dp"/>-->
-
-        <!--</shape>-->
-
-   <!--</item>-->
-
-    <!--<item-->
-        <!--android:state_pressed="false"-->
-        <!--android:drawable="@drawable/power"-->
-        <!--&gt;-->
-        <!--<shape>-->
-
-            <!--<size android:height="120dp"-->
-                <!--android:width="120dp"/>-->
-
-        <!--</shape>-->
-
-
-    <!--</item>-->
-
-    <!--<item android:drawable="@drawable/power">-->
-        <!--<shape>-->
-
-            <!--<size android:height="120dp"-->
-                <!--android:width="120dp"/>-->
-
-        <!--</shape>-->
-
-        <!--</item>-->
 
 </selector>

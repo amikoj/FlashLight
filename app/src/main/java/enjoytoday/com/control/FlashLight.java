@@ -10,6 +10,7 @@ import android.hardware.camera2.CameraAccessException;
 
 public abstract class FlashLight {
     protected final static String TAG=FlashLight.class.getSimpleName();
+    protected LambStateChangeListener lambStateChangeListener;
 
     protected FlashLight(){}
 
@@ -61,6 +62,16 @@ public abstract class FlashLight {
      * switch flashlight state.
      */
     public abstract void switchFlashLight(Context context) throws CameraAccessException;
+
+
+    /**
+     *
+     * @param lambStateChangeListener
+     * <p>Lamb state listener.<p/>
+     */
+    public void setLambStateChangeListener(LambStateChangeListener lambStateChangeListener){
+        this.lambStateChangeListener=lambStateChangeListener;
+    }
 
 
 

@@ -67,6 +67,9 @@ public class ControlUtils2 extends FlashLight {
                 parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
                 camera.setParameters(parameters);
                 camera.startPreview();
+                if (this.lambStateChangeListener!=null){
+                    this.lambStateChangeListener.onStateChanged(1,this);
+                }
                 sharedPreferences.edit().putBoolean("flash_mode",true).commit();
             } else {
                 Log.e(TAG, "FLASH_MODE_OFF not supported");
@@ -120,6 +123,9 @@ public class ControlUtils2 extends FlashLight {
                 parameters.setFlashMode(Parameters.FLASH_MODE_OFF);
                 camera.setParameters(parameters);
                 camera.release();
+                if (this.lambStateChangeListener!=null){
+                    this.lambStateChangeListener.onStateChanged(0,this);
+                }
                 sharedPreferences.edit().putBoolean("flash_mode",false).commit();
                 camera=null;
             } else {
