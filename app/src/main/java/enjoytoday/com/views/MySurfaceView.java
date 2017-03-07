@@ -5,6 +5,8 @@ import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;
+import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 
 public class MySurfaceView extends GLSurfaceView{
@@ -14,35 +16,57 @@ public class MySurfaceView extends GLSurfaceView{
     private float mPreviousY;//上次的触控位置Y坐标
     private float mPreviousX;//上次的触控位置Y坐标
     boolean openLightFlag=true;//开灯标记，false为关灯，true为开灯
-    public int openLightNum=1;         //开灯数量标记，1为一盏灯，2，为两盏灯...
-    public MySurfaceView(Context context) {
+    public int openLightNum=3;         //开灯数量标记，1为一盏灯，2，为两盏灯...
+    private String color;
+
+
+    private Handler mHandler=new Handler();
+    private boolean isStop=false;
+    private Thread animationThread=new Thread(){
+        @Override
+        public void run() {
+                mRenderer.ball.mAngleX += 300 * TOUCH_SCALE_FACTOR;//设置沿x轴旋转角度
+                mRenderer.ball.mAngleZ += 300 * TOUCH_SCALE_FACTOR;//设置沿z轴旋转角度
+                requestRender();//重绘画面
+                mHandler.postDelayed(this,40);
+        }
+    };
+
+
+    public void startAnimation(){
+       mHandler.postDelayed(animationThread,10);
+    }
+
+
+    public void stopAnimation(){
+        if (mHandler!=null && animationThread!=null){
+            mHandler.removeCallbacks(animationThread);
+        }
+
+    }
+
+
+    public MySurfaceView(Context context,String color) {
         super(context);
+        this.color=color;
         mRenderer = new SceneRenderer();    //创建场景渲染器
         setRenderer(mRenderer);             //设置渲染器
-        setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);//设置渲染模式为主动渲染
+        setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);//设置渲染模式为主动渲染
     }
 
     //触摸事件回调方法
-    @Override public boolean onTouchEvent(MotionEvent e) {
-        float y = e.getY();
-        float x = e.getX();
-        switch (e.getAction()) {
-            case MotionEvent.ACTION_MOVE:
-                float dy = y - mPreviousY;//计算触控笔Y位移
-                float dx = x - mPreviousX;//计算触控笔Y位移
-                mRenderer.ball.mAngleX += dy * TOUCH_SCALE_FACTOR;//设置沿x轴旋转角度
-                mRenderer.ball.mAngleZ += dx * TOUCH_SCALE_FACTOR;//设置沿z轴旋转角度
-                requestRender();//重绘画面
-        }
-        mPreviousY = y;//记录触控笔位置
-        mPreviousX = x;//记录触控笔位置
-        return true;
+    @Override
+    public boolean onTouchEvent(MotionEvent e) {
+       return super.onTouchEvent(e);
     }
-    private class SceneRenderer implements GLSurfaceView.Renderer
-    {
-        Ball ball=new Ball(4);
+
+
+
+    private class SceneRenderer implements GLSurfaceView.Renderer {
+        Ball ball=new Ball(5);
 
         public SceneRenderer(){
+
         }
         public void onDrawFrame(GL10 gl){
             gl.glShadeModel(GL10.GL_SMOOTH);
@@ -140,8 +164,23 @@ public class MySurfaceView extends GLSurfaceView{
             gl.glDisable(GL10.GL_DITHER);
             //设置特定Hint项目的模式，这里为设置为使用快速模式
             gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT,GL10.GL_FASTEST);
-            //设置屏幕背景色黑色RGBA
-            gl.glClearColor(0,0,0,0);
+
+            if (color!=null && color.length()>0){
+
+                if (color.equals("red")){
+                    gl.glClearColor(255,0,0,0);
+                }else if (color.equals("green")){
+                    gl.glClearColor(0,255,0,0);
+
+                }else if (color.equals("blue")){
+                    gl.glClearColor(0,0,255,0);
+                }else {
+                    gl.glClearColor(255,255,255,255);
+
+                }
+            }else {
+                gl.glClearColor(0, 0, 0, 0);
+            }
             //设置着色模型为平滑着色
             gl.glShadeModel(GL10.GL_SMOOTH);//GL10.GL_SMOOTH  GL10.GL_FLAT
             //启用深度测试

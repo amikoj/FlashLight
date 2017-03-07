@@ -5,30 +5,27 @@
     android:layout_height="match_parent">
 
 
-    <LinearLayout
-        android:id="@+id/lla"
+    <RelativeLayout
+        android:id="@+id/relative"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+
+
+    </RelativeLayout>
+
     <RatingBar
+        android:layout_marginTop="20dip"
+        android:layout_centerHorizontal="true"
+        android:progressDrawable="@drawable/custom_ratingbar"
         android:id="@+id/RatingBar01"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="50dip"
         android:max="5"
         android:rating="1"
         >
     </RatingBar>
-
-    </LinearLayout>
-
-
-
-    <!--<enjoytoday.com.views.MyGLSurfaceView-->
-    <!--android:id="@+id/gl_surface_view"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="match_parent" />-->
-
 
 
     <enjoytoday.com.views.VerticalSeekBar

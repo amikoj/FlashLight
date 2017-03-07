@@ -21,9 +21,13 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import android.widget.AdapterView;
+import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.umeng.analytics.MobclickAgent;
 
 import java.text.SimpleDateFormat;
@@ -94,6 +98,12 @@ public class MainActivity extends Activity  implements  LambStateChangeListener{
         timerTextView= (TextView) this.findViewById(R.id.timer);
         controlImageView= (ImageView) this.findViewById(R.id.lamb);
         seekBar= (SeekBar) this.findViewById(R.id.light_seek);
+
+
+
+
+
+
 
         typeface= Typeface.createFromAsset(this.getAssets(),"fonts/timer.ttf");
         timerTextView.setTypeface(typeface);
@@ -199,13 +209,33 @@ public class MainActivity extends Activity  implements  LambStateChangeListener{
      * @param view
      */
     public void click(View view){
-        if (flashLight!=null){
-            try {
-                flashLight.switchFlashLight(MainActivity.this);
-            } catch (Exception e) {
-                e.printStackTrace();
+        String color="red";
+        if (view.getId()==R.id.switcher) {
+            if (flashLight != null) {
+                try {
+                    flashLight.switchFlashLight(MainActivity.this);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
+            return;
+        }else if (view.getId()==R.id.red){
+            color="red";
+        }else if(view.getId()==R.id.green){
+            color="green";
+        }else if (view.getId()==R.id.white){
+            color="white";
+        }else if (view.getId()==R.id.blue){
+            color="blue";
         }
+
+        if (flashLight!=null){
+            flashLight.turnLightOff(this);
+        }
+        Intent intent=new Intent(this,ScreenLightActivity.class);
+        intent.putExtra("color",color);
+        startActivity(intent);
+
     }
 
 
