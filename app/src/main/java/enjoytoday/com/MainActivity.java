@@ -1,25 +1,22 @@
 package enjoytoday.com;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.res.AssetManager;
+
 import android.graphics.Typeface;
-import android.hardware.camera2.CameraAccessException;
-import android.net.Uri;
+
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
 import android.preference.PreferenceManager;
-import android.provider.Settings;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -27,8 +24,6 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.umeng.analytics.MobclickAgent;
 
 import java.text.SimpleDateFormat;
@@ -37,6 +32,7 @@ import java.util.Date;
 import enjoytoday.com.control.FlashLight;
 import enjoytoday.com.control.FlashLightFactory;
 import enjoytoday.com.control.LambStateChangeListener;
+import enjoytoday.com.utils.LightUtils;
 
 public class MainActivity extends Activity  implements  LambStateChangeListener{
 
@@ -172,11 +168,11 @@ public class MainActivity extends Activity  implements  LambStateChangeListener{
         }
         int oldBright=sharedPreferences.getInt("bright",-1);
         //获取当前亮度的位置
-        int a =getScreenBrightness(this);
+        int a = LightUtils.getScreenBrightness(this);
         LogUtils.setDebug("oldBright="+oldBright+",a="+a);
         if (a!=oldBright && oldBright!=-1){
             LogUtils.setDebug("a ! = oldbright.");
-            setBrightness(this,oldBright);
+            LightUtils.setBrightness(this,oldBright);
             a=oldBright;
         }
         seekBar.setProgress(a);
@@ -231,53 +227,6 @@ public class MainActivity extends Activity  implements  LambStateChangeListener{
 
 
 
-
-
-    /**
-     * 获取屏幕的亮度
-     *
-     * @param activity
-     * @return
-     */
-    public static int getScreenBrightness(Activity activity) {
-        int nowBrightnessValue = 0;
-        ContentResolver resolver = activity.getContentResolver();
-        try {
-            nowBrightnessValue = android.provider.Settings.System.getInt(
-                    resolver, Settings.System.SCREEN_BRIGHTNESS);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return nowBrightnessValue;
-    }
-
-
-
-    /**
-     * 设置亮度
-     *
-     * @param activity
-     * @param brightness
-     */
-    public static void setBrightness(Activity activity, int brightness) {
-        // Settings.System.putInt(activity.getContentResolver(),
-        // Settings.System.SCREEN_BRIGHTNESS_MODE,
-        // Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
-        WindowManager.LayoutParams lp = activity.getWindow().getAttributes();
-        lp.screenBrightness = Float.valueOf(brightness) * (1f / 255f);
-        activity.getWindow().setAttributes(lp);
-    }
-
-
-
-
-
-
-
-
-
-
-
 }
 
 
@@ -295,7 +244,6 @@ class TimerChangedReceiver extends BroadcastReceiver{
     @Override
     public void onReceive(Context context, Intent intent) {
         String action=intent.getAction();
-
         if (action.equals(Intent.ACTION_TIME_TICK)){
             Message.obtain(activity.mHandler,activity.TIMER_CHANGED_TICK).sendToTarget();
         }
@@ -306,40 +254,4 @@ class TimerChangedReceiver extends BroadcastReceiver{
 
 
 
-/**
- * seekBar 改变监听
- */
-class SeekBarChangListener implements SeekBar.OnSeekBarChangeListener{
 
-    private MainActivity activity;
-
-    public SeekBarChangListener(MainActivity activity){
-        this.activity=activity;
-    }
-
-
-    @Override
-    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        /**
-         * seekBar change.
-         */
-
-
-        if (progress < 10) {
-        } else {
-            activity.setBrightness(activity, progress);
-        }
-
-
-    }
-
-    @Override
-    public void onStartTrackingTouch(SeekBar seekBar) {
-
-    }
-
-    @Override
-    public void onStopTrackingTouch(SeekBar seekBar) {
-
-    }
-}
