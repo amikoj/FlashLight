@@ -113,12 +113,10 @@ public class ScreenLightActivity extends Activity {
         if (sharedPreferences==null){
             sharedPreferences= PreferenceManager.getDefaultSharedPreferences(this);
         }
-        int oldBright=sharedPreferences.getInt("bright",-1);
+        int oldBright=sharedPreferences.getInt("brights",-1);
         //获取当前亮度的位置
         int a = LightUtils.getScreenBrightness(this);
-        LogUtils.setDebug("oldBright="+oldBright+",a="+a);
         if (a!=oldBright && oldBright!=-1){
-            LogUtils.setDebug("a ! = oldbright.");
             LightUtils.setBrightness(this,oldBright);
             a=oldBright;
         }
@@ -137,8 +135,7 @@ public class ScreenLightActivity extends Activity {
             sharedPreferences= PreferenceManager.getDefaultSharedPreferences(this);
         }
         int bright=lightSeekBar.getProgress();
-        LogUtils.setDebug("bright="+bright);
-        sharedPreferences.edit().putInt("bright",bright).commit();
+        sharedPreferences.edit().putInt("brights",bright).commit();
         super.onPause();
         mySurfaceView.stopAnimation();
         mySurfaceView.onPause();

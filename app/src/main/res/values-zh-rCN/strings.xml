@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">手电筒</string>
-
-
+    <string name="led_text">亮度</string>
+    <string name="screen_light_text">屏保照明</string>
 
 </resources>

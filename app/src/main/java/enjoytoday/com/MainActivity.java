@@ -14,6 +14,7 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Message;
 
 import android.preference.PreferenceManager;
@@ -26,7 +27,6 @@ import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.umeng.analytics.MobclickAgent;
 
@@ -42,6 +42,7 @@ public class MainActivity extends Activity  implements  LambStateChangeListener{
 
 
     protected final int TIMER_CHANGED_TICK=10000;
+    protected final int DELAYED_LOADING=10001;
     private FlashLight flashLight;
     private TextView timerTextView;
     private ImageView controlImageView;
@@ -51,20 +52,25 @@ public class MainActivity extends Activity  implements  LambStateChangeListener{
     private SeekBarChangListener onSeekBarChangeListener;
     private SharedPreferences sharedPreferences;
 
-
-
     protected Handler mHandler=new Handler(){
 
         @Override
         public void handleMessage(Message msg) {
 
             if (msg.what==TIMER_CHANGED_TICK){
-                long times=System.currentTimeMillis();
-                String formatTimes=formatTimes(times);
-                timerTextView.setText(formatTimes);
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        long times=System.currentTimeMillis();
+                        String formatTimes=formatTimes(times);
+                        timerTextView.setText(formatTimes);
+                    }
+                });
+
+
             }
         }
-    };
+    };;
 
 
     /**
@@ -85,6 +91,9 @@ public class MainActivity extends Activity  implements  LambStateChangeListener{
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
+
+
+
         initViews();
 
 
@@ -105,41 +114,58 @@ public class MainActivity extends Activity  implements  LambStateChangeListener{
 
 
 
-        typeface= Typeface.createFromAsset(this.getAssets(),"fonts/timer.ttf");
-        timerTextView.setTypeface(typeface);
 
 
-        timerChangedReceiver=new TimerChangedReceiver(this);
-        onSeekBarChangeListener=new SeekBarChangListener(this);
+        new Thread(){
+            @Override
+            public void run() {
 
-        IntentFilter intentFilter=new IntentFilter();
-        intentFilter.addAction(Intent.ACTION_TIME_TICK);
-        registerReceiver(timerChangedReceiver,intentFilter);
-        seekBar.setMax(255);
-        seekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
+                timerChangedReceiver=new TimerChangedReceiver(MainActivity.this);
+                onSeekBarChangeListener=new SeekBarChangListener(MainActivity.this,100);
+                MobclickAgent.setScenarioType(MainActivity.this, MobclickAgent.EScenarioType.E_UM_NORMAL);
+                typeface= Typeface.createFromAsset(MainActivity.this.getAssets(),"fonts/timer.ttf");
+                timerTextView.setTypeface(typeface);
 
-        if (Build.VERSION.SDK_INT>=21) {
-            controlImageView.setBackground(this.getDrawable(R.drawable.lamb_background));
-        }else {
-            controlImageView.setBackground(this.getResources().getDrawable(R.drawable.lamb_background));
-        }
+                flashLight= FlashLightFactory.creatFlashLight();
+
+                IntentFilter intentFilter=new IntentFilter();
+                intentFilter.addAction(Intent.ACTION_TIME_TICK);
+                registerReceiver(timerChangedReceiver,intentFilter);
+
+                seekBar.setMax(255);
+                seekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
+
+
+                if (Build.VERSION.SDK_INT>=21) {
+                    controlImageView.setBackground(MainActivity.this.getDrawable(R.drawable.lamb_background));
+                }else {
+                    controlImageView.setBackground(MainActivity.this.getResources().getDrawable(R.drawable.lamb_background));
+                }
+
+                flashLight.turnNormalLightOn(MainActivity.this);
+
+                if (flashLight!=null){
+                    flashLight.setLambStateChangeListener(MainActivity.this);
+                }else {
+                    LogUtils.setDebug("flashLight is null.");
+                }
+
+
+            }
+        }.start();
+
+
 
         /**
          * refresh.
          */
         Message.obtain(mHandler,TIMER_CHANGED_TICK).sendToTarget();
+        Message message=Message.obtain(mHandler,DELAYED_LOADING);
+
+        mHandler.sendMessageDelayed(message,1000);
 
 
-        MobclickAgent.setScenarioType(this, MobclickAgent.EScenarioType.E_UM_NORMAL);
-        flashLight= FlashLightFactory.creatFlashLight();
-        flashLight.turnNormalLightOn(this);
 
-        if (flashLight!=null){
-            LogUtils.setDebug("flashLight is not null");
-            flashLight.setLambStateChangeListener(this);
-        }else {
-            LogUtils.setDebug("flashLight is null.");
-        }
 
 
 
@@ -179,9 +205,7 @@ public class MainActivity extends Activity  implements  LambStateChangeListener{
         int oldBright=sharedPreferences.getInt("bright",-1);
         //获取当前亮度的位置
         int a = LightUtils.getScreenBrightness(this);
-        LogUtils.setDebug("oldBright="+oldBright+",a="+a);
         if (a!=oldBright && oldBright!=-1){
-            LogUtils.setDebug("a ! = oldbright.");
             LightUtils.setBrightness(this,oldBright);
             a=oldBright;
         }
@@ -253,7 +277,6 @@ public class MainActivity extends Activity  implements  LambStateChangeListener{
         }
         super.onDestroy();
     }
-
 
 
 

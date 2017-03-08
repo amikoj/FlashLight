@@ -15,29 +15,40 @@ import enjoytoday.com.utils.LightUtils;
  * seekBar 改变监听
  */
 public class SeekBarChangListener implements SeekBar.OnSeekBarChangeListener{
-    private Activity activity;
+    private final Activity activity;
     private int minLimit=10;
+
+    private int light=0;
 
     public SeekBarChangListener(Activity activity){
         this.activity=activity;
+        light=LightUtils.getScreenBrightness(activity);
     }
 
     public SeekBarChangListener(Activity activity,int minLimit){
         this.minLimit=minLimit;
         this.activity=activity;
+        light=LightUtils.getScreenBrightness(activity);
     }
 
 
     @Override
-    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+    public void onProgressChanged(SeekBar seekBar, final int progress, boolean fromUser) {
         /**
          * seekBar change.
          */
-        if (progress < minLimit) {
-            return;
-        } else {
-            LightUtils.setBrightness(activity, progress);
-        }
+
+
+      if (Math.abs(progress-light)>30){
+               light=progress;
+               LightUtils.setBrightness(activity, progress);
+       }else {
+          return;
+      }
+
+
+
+
     }
 
     @Override

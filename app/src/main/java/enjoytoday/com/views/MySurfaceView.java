@@ -13,15 +13,11 @@ public class MySurfaceView extends GLSurfaceView{
 
     private final float TOUCH_SCALE_FACTOR = 180.0f/320;//角度缩放比例
     private SceneRenderer mRenderer;//场景渲染器
-    private float mPreviousY;//上次的触控位置Y坐标
-    private float mPreviousX;//上次的触控位置Y坐标
-    boolean openLightFlag=true;//开灯标记，false为关灯，true为开灯
-    public int openLightNum=3;         //开灯数量标记，1为一盏灯，2，为两盏灯...
+    public int openLightNum=2;         //开灯数量标记，1为一盏灯，2，为两盏灯...
     private String color;
 
 
     private Handler mHandler=new Handler();
-    private boolean isStop=false;
     private Thread animationThread=new Thread(){
         @Override
         public void run() {

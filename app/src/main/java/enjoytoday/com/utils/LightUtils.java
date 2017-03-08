@@ -12,6 +12,9 @@ import android.view.WindowManager;
  */
 
 public class LightUtils {
+
+    private static   Activity activity;
+
     /**
      * 获取屏幕的亮度
      *
@@ -19,6 +22,8 @@ public class LightUtils {
      * @return
      */
     public static int getScreenBrightness(Activity activity) {
+
+
         int nowBrightnessValue = 0;
         ContentResolver resolver = activity.getContentResolver();
         try {
