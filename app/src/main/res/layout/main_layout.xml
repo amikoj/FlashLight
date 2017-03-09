@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:background="@drawable/default_background_color"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:layout_width="match_parent"
+    tools:context=".MainActivity"
+    android:layout_height="match_parent">
+
+
+
+
+    <include
+        android:id="@+id/flash"
+        android:visibility="visible"
+        layout="@layout/activity_main"/>
+
+
+    <include
+        android:id="@+id/screen"
+        android:visibility="gone"
+        layout="@layout/screen_layout"/>
+
+
+    <include
+        android:id="@+id/settings"
+        android:visibility="gone"
+        layout="@layout/settings_layout"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <enjoytoday.com.views.SwitchButton
+        android:id="@+id/switch_tab"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/switch_button_height" />
+
+
+
+
+
+
+</RelativeLayout>

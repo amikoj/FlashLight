@@ -4,4 +4,10 @@
     <string name="led_text">亮度</string>
     <string name="screen_light_text">屏保照明</string>
 
+    <string-array name="tab_texts">
+        <item>屏保</item>
+        <item>闪光灯</item>
+        <item>说明</item>
+    </string-array>
+
 </resources>

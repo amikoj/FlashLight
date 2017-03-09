@@ -31,7 +31,7 @@ public class ControlUtils1 extends FlashLight {
     @Override
     public void turnNormalLightOn(Context context) {
         if (cameraManager==null){
-            cameraManager= (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
+            cameraManager= (CameraManager) context.getApplicationContext().getSystemService(Context.CAMERA_SERVICE);
         }
 
         if (sharedPreferences==null){
@@ -50,7 +50,7 @@ public class ControlUtils1 extends FlashLight {
             if (isSupport) {
                 cameraManager.setTorchMode(CameraCharacteristics.LENS_FACING_FRONT + "", true);
                 if (this.lambStateChangeListener!=null){
-                    LogUtils.setDebug("get lambestateChangeListener state=1");
+//                    LogUtils.setDebug("get lambestateChangeListener state=1");
                     this.lambStateChangeListener.onStateChanged(1,this);
                 }
                 sharedPreferences.edit().putBoolean("flash_mode",true).commit();
@@ -66,8 +66,11 @@ public class ControlUtils1 extends FlashLight {
 
     @Override
     public void turnLightOff(Context context) {
+        if (context==null){
+            return;
+        }
         if (cameraManager==null){
-            cameraManager= (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
+            cameraManager= (CameraManager) context.getApplicationContext().getSystemService(Context.CAMERA_SERVICE);
         }
         if (sharedPreferences==null){
             sharedPreferences= PreferenceManager.getDefaultSharedPreferences(context);
@@ -82,7 +85,7 @@ public class ControlUtils1 extends FlashLight {
             if (isSupport) {
                 cameraManager.setTorchMode(CameraCharacteristics.LENS_FACING_FRONT + "", false);
                 if (this.lambStateChangeListener!=null){
-                    LogUtils.setDebug("get lambestateChangeListener state=0");
+//                    LogUtils.setDebug("get lambestateChangeListener state=0");
                     this.lambStateChangeListener.onStateChanged(0,this);
                 }
                 sharedPreferences.edit().putBoolean("flash_mode",false).commit();
@@ -96,8 +99,11 @@ public class ControlUtils1 extends FlashLight {
 
     @Override
     public void switchFlashLight(Context context) throws CameraAccessException {
+        if (context==null){
+            return;
+        }
         if (cameraManager==null){
-            cameraManager= (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
+            cameraManager= (CameraManager) context.getApplicationContext().getSystemService(Context.CAMERA_SERVICE);
         }
 
         if (sharedPreferences==null){

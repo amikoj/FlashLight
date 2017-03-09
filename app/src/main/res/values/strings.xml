@@ -2,6 +2,12 @@
     <string name="app_name">FlashLight</string>
 
     <string name="led_text">LIGHT</string>
-
     <string name="screen_light_text">SCREEN</string>
+
+
+    <string-array name="tab_texts">
+        <item>Screen</item>
+        <item>Flash</item>
+        <item>Explain</item>
+    </string-array>
 </resources>

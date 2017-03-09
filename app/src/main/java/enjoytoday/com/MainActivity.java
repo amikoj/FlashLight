@@ -9,23 +9,15 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 
-import android.graphics.Typeface;
-
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.Message;
 
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-
-import android.widget.AdapterView;
-import android.widget.Gallery;
 import android.widget.ImageView;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.umeng.analytics.MobclickAgent;
@@ -37,20 +29,37 @@ import enjoytoday.com.control.FlashLight;
 import enjoytoday.com.control.FlashLightFactory;
 import enjoytoday.com.control.LambStateChangeListener;
 import enjoytoday.com.utils.LightUtils;
+import enjoytoday.com.views.SwitchButton;
 
-public class MainActivity extends Activity  implements  LambStateChangeListener{
+public class MainActivity extends Activity  implements  LambStateChangeListener,SwitchButton.OnSwitchChangeListener{
 
 
     protected final int TIMER_CHANGED_TICK=10000;
-    protected final int DELAYED_LOADING=10001;
     private FlashLight flashLight;
     private TextView timerTextView;
     private ImageView controlImageView;
-    private Typeface typeface;
     private TimerChangedReceiver timerChangedReceiver;
-    private SeekBar seekBar;
-    private SeekBarChangListener onSeekBarChangeListener;
     private SharedPreferences sharedPreferences;
+
+
+
+
+    private View flashView;
+    private View screenView;
+    private View settingsView;
+    private SwitchButton switchTab;
+
+
+    private String[] tabTexts;
+    private View[] views;
+
+
+
+
+
+
+
+
 
     protected Handler mHandler=new Handler(){
 
@@ -66,7 +75,6 @@ public class MainActivity extends Activity  implements  LambStateChangeListener{
                         timerTextView.setText(formatTimes);
                     }
                 });
-
 
             }
         }
@@ -88,12 +96,8 @@ public class MainActivity extends Activity  implements  LambStateChangeListener{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.activity_main);
-
-
-
+        setContentView(R.layout.main_layout);
+        MobclickAgent.setScenarioType(MainActivity.this, MobclickAgent.EScenarioType.E_UM_NORMAL);
         initViews();
 
 
@@ -103,74 +107,78 @@ public class MainActivity extends Activity  implements  LambStateChangeListener{
 
 
 
+
     private void initViews(){
         timerTextView= (TextView) this.findViewById(R.id.timer);
         controlImageView= (ImageView) this.findViewById(R.id.lamb);
-        seekBar= (SeekBar) this.findViewById(R.id.light_seek);
+
+        flashView=findViewById(R.id.flash);
+        settingsView=findViewById(R.id.settings);
+        screenView=findViewById(R.id.screen);
+        switchTab= (SwitchButton) findViewById(R.id.switch_tab);
+
+
+        tabTexts=this.getResources().getStringArray(R.array.tab_texts);
+
+        switchTab.setTabTexts(tabTexts);
+        views=new View[]{screenView,flashView,settingsView};
 
 
 
+        switchTab.setOnSwitchChangeListener(this);
 
+        setVisibleView(switchTab.getCurrentTab());
+        timerChangedReceiver=new TimerChangedReceiver(MainActivity.this);
+        flashLight= FlashLightFactory.creatFlashLight();
+        IntentFilter intentFilter=new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_TIME_TICK);
+        registerReceiver(timerChangedReceiver,intentFilter);
 
-
-
-
-
-        new Thread(){
-            @Override
-            public void run() {
-
-                timerChangedReceiver=new TimerChangedReceiver(MainActivity.this);
-                onSeekBarChangeListener=new SeekBarChangListener(MainActivity.this,100);
-                MobclickAgent.setScenarioType(MainActivity.this, MobclickAgent.EScenarioType.E_UM_NORMAL);
-                typeface= Typeface.createFromAsset(MainActivity.this.getAssets(),"fonts/timer.ttf");
-                timerTextView.setTypeface(typeface);
-
-                flashLight= FlashLightFactory.creatFlashLight();
-
-                IntentFilter intentFilter=new IntentFilter();
-                intentFilter.addAction(Intent.ACTION_TIME_TICK);
-                registerReceiver(timerChangedReceiver,intentFilter);
-
-                seekBar.setMax(255);
-                seekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
-
-
-                if (Build.VERSION.SDK_INT>=21) {
-                    controlImageView.setBackground(MainActivity.this.getDrawable(R.drawable.lamb_background));
-                }else {
-                    controlImageView.setBackground(MainActivity.this.getResources().getDrawable(R.drawable.lamb_background));
-                }
-
-                flashLight.turnNormalLightOn(MainActivity.this);
-
-                if (flashLight!=null){
+        flashLight.turnNormalLightOn(MainActivity.this);
+        if (flashLight!=null){
                     flashLight.setLambStateChangeListener(MainActivity.this);
-                }else {
+         }else {
                     LogUtils.setDebug("flashLight is null.");
-                }
-
-
-            }
-        }.start();
-
-
+        }
 
         /**
          * refresh.
          */
         Message.obtain(mHandler,TIMER_CHANGED_TICK).sendToTarget();
-        Message message=Message.obtain(mHandler,DELAYED_LOADING);
-
-        mHandler.sendMessageDelayed(message,1000);
-
-
-
-
-
 
 
     }
+
+
+    /**
+     * 显示当前的tab
+     * @param position
+     */
+    private void setVisibleView(int position){
+        if (views==null || views.length==0 || tabTexts==null || tabTexts.length==0){
+            LogUtils.setDebug("views and tabTexts is not null.");
+            return;
+        }else if (views.length!=tabTexts.length){
+            LogUtils.setDebug("views and tabTexts is not same length.");
+            return;
+        }
+
+        for (int i=0; i<views.length;i++){
+            if (i==position){
+                views[i].setVisibility(View.VISIBLE);
+            }else {
+                views[i].setVisibility(View.GONE);
+            }
+        }
+
+    }
+
+
+
+
+
+
+
 
 
     @Override
@@ -178,17 +186,9 @@ public class MainActivity extends Activity  implements  LambStateChangeListener{
 
         LogUtils.setDebug("get state:"+state);
         if (state==0){
-            if (Build.VERSION.SDK_INT>=21) {
-                controlImageView.setBackground(MainActivity.this.getDrawable(R.drawable.lamb_close_background));
-            }else {
-                controlImageView.setBackground(MainActivity.this.getResources().getDrawable(R.drawable.lamb_close_background));
-            }
+            controlImageView.setImageDrawable(null);
         }else if (state==1){
-            if (Build.VERSION.SDK_INT>=21) {
-                controlImageView.setBackground(MainActivity.this.getDrawable(R.drawable.lamb_background));
-            }else {
-                controlImageView.setBackground(MainActivity.this.getResources().getDrawable(R.drawable.lamb_background));
-            }
+            controlImageView.setImageDrawable(this.getResources().getDrawable(R.drawable.lamb_light));
 
         }
     }
@@ -199,17 +199,10 @@ public class MainActivity extends Activity  implements  LambStateChangeListener{
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         MobclickAgent.onResume(this);
 
+        LightUtils.setBrightness(this,200);
         if (sharedPreferences==null){
             sharedPreferences= PreferenceManager.getDefaultSharedPreferences(this);
         }
-        int oldBright=sharedPreferences.getInt("bright",-1);
-        //获取当前亮度的位置
-        int a = LightUtils.getScreenBrightness(this);
-        if (a!=oldBright && oldBright!=-1){
-            LightUtils.setBrightness(this,oldBright);
-            a=oldBright;
-        }
-        seekBar.setProgress(a);
         super.onResume();
     }
 
@@ -218,12 +211,6 @@ public class MainActivity extends Activity  implements  LambStateChangeListener{
     @Override
     protected void onPause() {
         MobclickAgent.onPause(this);
-        if (sharedPreferences==null){
-            sharedPreferences= PreferenceManager.getDefaultSharedPreferences(this);
-        }
-        int bright=seekBar.getProgress();
-        LogUtils.setDebug("bright="+bright);
-        sharedPreferences.edit().putInt("bright",bright).commit();
         super.onPause();
     }
 
@@ -243,22 +230,7 @@ public class MainActivity extends Activity  implements  LambStateChangeListener{
                 }
             }
             return;
-        }else if (view.getId()==R.id.red){
-            color="red";
-        }else if(view.getId()==R.id.green){
-            color="green";
-        }else if (view.getId()==R.id.white){
-            color="white";
-        }else if (view.getId()==R.id.blue){
-            color="blue";
         }
-
-        if (flashLight!=null){
-            flashLight.turnLightOff(this);
-        }
-        Intent intent=new Intent(this,ScreenLightActivity.class);
-        intent.putExtra("color",color);
-        startActivity(intent);
 
     }
 
@@ -277,6 +249,28 @@ public class MainActivity extends Activity  implements  LambStateChangeListener{
         }
         super.onDestroy();
     }
+
+
+    @Override
+    public void onSwitchChange(int position, String text, SwitchButton switchButton) {
+        setVisibleView(position);
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

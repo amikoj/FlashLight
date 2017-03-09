@@ -6,4 +6,9 @@
 
     <color name="background">#dd000000</color>
     <color name="timer_text_color">#ffffff</color>
+
+
+
+
+    <drawable name="default_background_color">#aa87CEFF</drawable>
 </resources>

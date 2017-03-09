@@ -25,6 +25,9 @@ public class ControlUtils2 extends FlashLight {
 
     @Override
    public void turnNormalLightOn(Context context) {
+        if (context==null){
+            return;
+        }
         if (camera==null ){
             try{
                 camera=Camera.open();
@@ -44,7 +47,7 @@ public class ControlUtils2 extends FlashLight {
 
 
         if (sharedPreferences==null){
-            sharedPreferences= PreferenceManager.getDefaultSharedPreferences(context);
+            sharedPreferences= PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
         }
 
         Parameters parameters = camera.getParameters();
@@ -81,6 +84,10 @@ public class ControlUtils2 extends FlashLight {
     @Override
     public  void turnLightOff(Context context) {
 
+        if (context==null){
+            return;
+        }
+
         if (camera==null ){
             try{
                 camera=Camera.open();
@@ -100,7 +107,7 @@ public class ControlUtils2 extends FlashLight {
 
 
         if (sharedPreferences==null){
-            sharedPreferences= PreferenceManager.getDefaultSharedPreferences(context);
+            sharedPreferences= PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
         }
 
         Parameters parameters = camera.getParameters();
