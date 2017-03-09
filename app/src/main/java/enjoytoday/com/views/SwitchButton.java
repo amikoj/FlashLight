@@ -234,7 +234,7 @@ public class SwitchButton extends View {
             float division=x-defaultMargin;
             int a= (int) (division/divisionWidth);
 
-            if (division>0 && (y>defaultPadding && y<height-defaultPadding)){
+            if (division>0 && (y>defaultPadding && y<height-defaultPadding) && selectNum!=a){
                 selectNum=a;
                 if (this.onSwitchChangeListener!=null){
                     onSwitchChangeListener.onSwitchChange(selectNum,tabTexts.get(selectNum),this);
