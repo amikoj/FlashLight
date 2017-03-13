@@ -16,13 +16,13 @@
 
     <include
         android:id="@+id/flash"
-        android:visibility="visible"
+        android:visibility="gone"
         layout="@layout/activity_main"/>
 
 
     <include
         android:id="@+id/screen"
-        android:visibility="gone"
+        android:visibility="visible"
         layout="@layout/screen_layout"/>
 
 

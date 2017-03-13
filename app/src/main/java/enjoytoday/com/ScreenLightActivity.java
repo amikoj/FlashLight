@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
@@ -57,11 +58,9 @@ public class ScreenLightActivity extends Activity {
 
         lightSeekBar= (VerticalSeekBar) findViewById(R.id.light_vertical_seek);
         mySurfaceView = new MySurfaceView(this,color);
+
+        Log.e("color","ScreenLightActivity color:"+color);
         rb = (RatingBar) findViewById(R.id.RatingBar01);
-
-
-
-
 
         mySurfaceView.requestFocus();
         RelativeLayout lla = (RelativeLayout) findViewById(R.id.relative);

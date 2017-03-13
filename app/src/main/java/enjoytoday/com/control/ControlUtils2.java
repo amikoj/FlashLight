@@ -98,7 +98,7 @@ public class ControlUtils2 extends FlashLight {
                     camera=Camera.open(Camera.getNumberOfCameras()-1);
                 }catch (Exception e1){
                     e1.printStackTrace();
-                    Toast.makeText(context,"Camera access is occupied by other applications, can not open！",Toast.LENGTH_LONG).show();
+//                    Toast.makeText(context,"Camera access is occupied by other applications, can not open！",Toast.LENGTH_LONG).show();
                     LogUtils.setDebug("Camera open one parameters failed. Camera can not open.");
                     return;
                 }
@@ -112,7 +112,7 @@ public class ControlUtils2 extends FlashLight {
 
         Parameters parameters = camera.getParameters();
         if (parameters == null) {
-            Toast.makeText(context,"Current Camera settings is not support .",Toast.LENGTH_LONG).show();
+//            Toast.makeText(context,"Current Camera settings is not support .",Toast.LENGTH_LONG).show();
             LogUtils.setDebug("Current Camera settings is not support .");
             return;
         }
@@ -120,7 +120,7 @@ public class ControlUtils2 extends FlashLight {
         String flashMode = parameters.getFlashMode();
         // Check if camera flash exists
         if (flashModes == null) {
-            Toast.makeText(context,"Current Camera flash is not support .",Toast.LENGTH_LONG).show();
+//            Toast.makeText(context,"Current Camera flash is not support .",Toast.LENGTH_LONG).show();
             LogUtils.setDebug("Current Camera flash is not support .");
             return;
         }
@@ -168,8 +168,9 @@ public class ControlUtils2 extends FlashLight {
         }
         String mode=parameters.getFlashMode();
 
-
-        if (mode.equals(Parameters.FLASH_MODE_OFF)){
+        if(mode==null || mode.length()==0){
+            Toast.makeText(context,"Current Camera settings is not support .",Toast.LENGTH_LONG).show();
+        }else if (mode.equals(Parameters.FLASH_MODE_OFF)){
             this.turnNormalLightOn(context);
         }else if (mode.equals(Parameters.FLASH_MODE_TORCH)){
             this.turnLightOff(context);

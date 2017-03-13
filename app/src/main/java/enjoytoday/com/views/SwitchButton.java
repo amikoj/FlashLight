@@ -13,6 +13,7 @@ import android.view.View;
 import java.util.Arrays;
 import java.util.List;
 
+import enjoytoday.com.LogUtils;
 import enjoytoday.com.utils.ViewUtils;
 
 /**
@@ -228,6 +229,12 @@ public class SwitchButton extends View {
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
 
+
+        if (selectNum>=tabTexts.size()){
+            LogUtils.setDebug("array size overflow.");
+            return  super.dispatchTouchEvent(event);
+        }
+
         if (event.getAction()==MotionEvent.ACTION_DOWN){
             float x=event.getX();
             float y=event.getY();
@@ -240,6 +247,7 @@ public class SwitchButton extends View {
                     onSwitchChangeListener.onSwitchChange(selectNum,tabTexts.get(selectNum),this);
                 }
                 invalidate();
+
             }
 
         }

@@ -59,8 +59,7 @@
 
         <ImageView
             android:id="@+id/lamb"
-            android:src="@drawable/lamb_light"
-            android:background="@drawable/lamb_dark"
+            android:background="@drawable/lamb_dark_small"
             android:layout_width="20dip"
             android:layout_height="30dip" />
 

@@ -4,10 +4,14 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
 import android.opengl.GLSurfaceView;
 import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
+
+import java.util.Map;
 
 public class MySurfaceView extends GLSurfaceView{
 
@@ -155,28 +159,80 @@ public class MySurfaceView extends GLSurfaceView{
             //调用此方法计算产生透视投影矩阵
             gl.glFrustumf(-ratio, ratio, -1, 1, 1, 10);
         }
+
+
+        /**
+         *
+         * @param color
+         * @return  返回顺序 a r  b
+         */
+        private int[] parseFromColor(String color){
+            if (color==null || color.length()<7 && color.length()>9){
+                return new int[]{255,255,255,255};
+            }else if (color.length()==7){
+                return new int[]{255,HexString2D(color.substring(1,3)),HexString2D(color.substring(3,5)),HexString2D(color.substring(5,7))};
+            }else if (color.length()==9){
+                return new int[]{HexString2D(color.substring(1,3)),HexString2D(color.substring(3,5)),HexString2D(color.substring(5,7)),HexString2D(color.substring(7,9))};
+            }else {
+                return new int[]{255,255,255,255};
+            }
+
+        }
+
+
+
+
+        private int HexString2D(String hexString){
+            if (hexString==null || hexString.length()==0){
+                return 0;
+            }else {
+                char[] chars=hexString.toLowerCase().toCharArray();
+                int num=0;
+
+                for (int i=0;i<chars.length;i++){
+                    int j;
+                    if ("1234567890".contains(chars[i]+"")){
+                        j= Integer.parseInt(chars[i]+"");
+                    }else if ("aAbBcCdDeEfF".contains(chars[i]+"")){
+                       j= chars[i]-'a'+10;
+                    }else {
+                        return 0;
+                    }
+
+                   num+= Math.pow(16,(chars.length-i-1))*j;
+
+                }
+
+                return num;
+
+
+            }
+
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
         public void onSurfaceCreated(GL10 gl, EGLConfig config) {
             //关闭抗抖动
             gl.glDisable(GL10.GL_DITHER);
             //设置特定Hint项目的模式，这里为设置为使用快速模式
             gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT,GL10.GL_FASTEST);
 
-            if (color!=null && color.length()>0){
+            int[] colors=parseFromColor(color);
+            Log.e("color","MySurfaceView color:"+colors[0]+","+colors[1]+","+colors[2]+","+colors[3]);
 
-                if (color.equals("red")){
-                    gl.glClearColor(255,0,0,0);
-                }else if (color.equals("green")){
-                    gl.glClearColor(0,255,0,0);
+            gl.glClearColor(colors[1],colors[2],colors[3],colors[0]);
 
-                }else if (color.equals("blue")){
-                    gl.glClearColor(0,0,255,0);
-                }else {
-                    gl.glClearColor(255,255,255,255);
-
-                }
-            }else {
-                gl.glClearColor(0, 0, 0, 0);
-            }
             //设置着色模型为平滑着色
             gl.glShadeModel(GL10.GL_SMOOTH);//GL10.GL_SMOOTH  GL10.GL_FLAT
             //启用深度测试
@@ -195,8 +251,7 @@ public class MySurfaceView extends GLSurfaceView{
         float[] specularParams={1.0f,1.0f,1.0f,1.0f};//光参数 RGBA
         gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_SPECULAR, specularParams,0);
     }
-    private void initLight1(GL10 gl)
-    {
+    private void initLight1(GL10 gl) {
         gl.glEnable(GL10.GL_LIGHT1);//打开1号灯  ,红色
         //环境光设置
         float[] ambientParams={0.2f,0.03f,0.03f,1.0f};//光参数 RGBA
@@ -208,8 +263,7 @@ public class MySurfaceView extends GLSurfaceView{
         float[] specularParams={1.0f,0.1f,0.1f,1.0f};//光参数 RGBA
         gl.glLightfv(GL10.GL_LIGHT1, GL10.GL_SPECULAR, specularParams,0);
     }
-    private void initLight2(GL10 gl)
-    {
+    private void initLight2(GL10 gl) {
         gl.glEnable(GL10.GL_LIGHT2);//打开1号灯  ,蓝色
         //环境光设置
         float[] ambientParams={0.03f,0.03f,0.2f,1.0f};//光参数 RGBA
@@ -221,8 +275,7 @@ public class MySurfaceView extends GLSurfaceView{
         float[] specularParams={0.1f,0.1f,1.0f,1.0f};//光参数 RGBA
         gl.glLightfv(GL10.GL_LIGHT2, GL10.GL_SPECULAR, specularParams,0);
     }
-    private void initLight3(GL10 gl)
-    {
+    private void initLight3(GL10 gl) {
         gl.glEnable(GL10.GL_LIGHT3);//打开3号灯  ,绿色
         //环境光设置
         float[] ambientParams={0.03f,0.2f,0.03f,1.0f};//光参数 RGBA
@@ -234,8 +287,7 @@ public class MySurfaceView extends GLSurfaceView{
         float[] specularParams={0.1f,1.0f,0.1f,1.0f};//光参数 RGBA
         gl.glLightfv(GL10.GL_LIGHT3, GL10.GL_SPECULAR, specularParams,0);
     }
-    private void initLight4(GL10 gl)
-    {
+    private void initLight4(GL10 gl) {
         gl.glEnable(GL10.GL_LIGHT4);//打开3号灯  ,黄色
         //环境光设置
         float[] ambientParams={0.2f,0.2f,0.03f,1.0f};//光参数 RGBA
@@ -247,8 +299,7 @@ public class MySurfaceView extends GLSurfaceView{
         float[] specularParams={1.0f,1.0f,0.1f,1.0f};//光参数 RGBA
         gl.glLightfv(GL10.GL_LIGHT4, GL10.GL_SPECULAR, specularParams,0);
     }
-    private void initMaterialWhite(GL10 gl)
-    {//材质为白色时什么颜色的光照在上面就将体现出什么颜色
+    private void initMaterialWhite(GL10 gl) {//材质为白色时什么颜色的光照在上面就将体现出什么颜色
         //环境光为白色材质
         float ambientMaterial[] = {0.4f, 0.4f, 0.4f, 1.0f};
         gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, ambientMaterial,0);

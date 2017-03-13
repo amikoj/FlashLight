@@ -24,11 +24,13 @@ import com.umeng.analytics.MobclickAgent;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import enjoytoday.com.control.FlashLight;
 import enjoytoday.com.control.FlashLightFactory;
 import enjoytoday.com.control.LambStateChangeListener;
 import enjoytoday.com.utils.LightUtils;
+import enjoytoday.com.views.Image3DSwitchView;
 import enjoytoday.com.views.SwitchButton;
 
 public class MainActivity extends Activity  implements  LambStateChangeListener,SwitchButton.OnSwitchChangeListener{
@@ -40,6 +42,7 @@ public class MainActivity extends Activity  implements  LambStateChangeListener,
     private ImageView controlImageView;
     private TimerChangedReceiver timerChangedReceiver;
     private SharedPreferences sharedPreferences;
+    private Image3DSwitchView image3DSwitchView;
 
 
 
@@ -54,6 +57,9 @@ public class MainActivity extends Activity  implements  LambStateChangeListener,
     private View[] views;
 
 
+    private String[] colors=new String[]{"#ff0000","#00ff00","#0000ff","#ffffff","#ff00cc","#00ffff"};
+
+
 
 
 
@@ -62,7 +68,6 @@ public class MainActivity extends Activity  implements  LambStateChangeListener,
 
 
     protected Handler mHandler=new Handler(){
-
         @Override
         public void handleMessage(Message msg) {
 
@@ -116,6 +121,7 @@ public class MainActivity extends Activity  implements  LambStateChangeListener,
         settingsView=findViewById(R.id.settings);
         screenView=findViewById(R.id.screen);
         switchTab= (SwitchButton) findViewById(R.id.switch_tab);
+        image3DSwitchView= (Image3DSwitchView) findViewById(R.id.image_switch_view);
 
 
         tabTexts=this.getResources().getStringArray(R.array.tab_texts);
@@ -134,18 +140,31 @@ public class MainActivity extends Activity  implements  LambStateChangeListener,
         intentFilter.addAction(Intent.ACTION_TIME_TICK);
         registerReceiver(timerChangedReceiver,intentFilter);
 
-        flashLight.turnNormalLightOn(MainActivity.this);
         if (flashLight!=null){
                     flashLight.setLambStateChangeListener(MainActivity.this);
          }else {
                     LogUtils.setDebug("flashLight is null.");
         }
 
+        flashLight.turnNormalLightOn(MainActivity.this);
+
+        image3DSwitchView.setOnImageClickListener(new Image3DSwitchView.OnImageClickListener() {
+            @Override
+            public void onImageClick(int currentImage, Image3DSwitchView view) {
+                Intent intent=new Intent(MainActivity.this,ScreenLightActivity.class);
+                intent.putExtra("color",colors[currentImage]);
+                MainActivity.this.startActivity(intent);
+
+
+
+            }
+        });
+
+
         /**
          * refresh.
          */
         Message.obtain(mHandler,TIMER_CHANGED_TICK).sendToTarget();
-
 
     }
 
@@ -183,12 +202,11 @@ public class MainActivity extends Activity  implements  LambStateChangeListener,
 
     @Override
     public void onStateChanged(int state, FlashLight flashLight) {
-
         LogUtils.setDebug("get state:"+state);
         if (state==0){
             controlImageView.setImageDrawable(null);
         }else if (state==1){
-            controlImageView.setImageDrawable(this.getResources().getDrawable(R.drawable.lamb_light));
+            controlImageView.setImageDrawable(this.getResources().getDrawable(R.drawable.lamb_light_smaller));
 
         }
     }
