@@ -13,14 +13,55 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        debug{
+
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+
+    productFlavors {
+        kuan {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "kuan"]
+        }
+        xiaomi {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "xiaomi"]
+        }
+        qh360 {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "qh360"]
+        }
+        baidu {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "baidu"]
+        }
+        wandoujia {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "wandoujia"]
+        }
+        yingyongbao{
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "yingyongbao"]
+        }
+        anzhi{
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "anzhi"]
+        }
+
+
+        zhushou91{
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "zhushou91"]
+        }
+
+    }
+
+
+
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile files('libs/umeng-analytics-v6.0.9.jar')
     compile files('libs/utdid4all-1.0.4.jar')
+    compile 'com.google.android.gms:play-services-appindexing:8.4.0'
 }

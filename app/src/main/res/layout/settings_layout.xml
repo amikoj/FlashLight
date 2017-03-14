@@ -1,15 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:gravity="center"
     android:background="@drawable/default_background_color"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
     <TextView
-        android:textSize="28sp"
-        android:text="this is setting page"
+        android:paddingTop="40dip"
+        android:textSize="20sp"
+        android:textColor="@android:color/white"
+        android:maxLines="10"
+        android:layout_marginLeft="15dip"
+        android:layout_marginRight="15dip"
+        android:layout_margin="5dip"
+        android:text="@string/explain_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
+
+
+    <Button
+        android:textSize="20sp"
+        android:textColor="@drawable/submit_textview_color_style"
+        android:layout_marginTop="40dip"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/submit_text"
+        android:onClick="click"
+        android:background="@drawable/customer_button"
+        android:id="@+id/submit_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+
+
+
+
+
 </LinearLayout>

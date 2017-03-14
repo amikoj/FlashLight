@@ -10,4 +10,22 @@
         <item>Flash</item>
         <item>Explain</item>
     </string-array>
+
+
+    <string name="explain_text">\u0020\u0020\u0020\u0020Due to the limitations of personal imagination, may make my app interface is not too beautiful, if you have any function of the app or interface requirements or suggestions, I hope you can submit your feedback to me, I will Make the best possible modification.</string>
+    <string name="submit_text">Submit</string>
+
+    <string name="submit_title_text">Enter your suggestion</string>
+
+    <string name="submit_ensure_text">Submit</string>
+
+    <string name="submit_cancel_text">Cancel</string>
+
+    <string name="submit_edit_tips">Word limit within 100.</string>
+
+    <string name="no_message_tips">Suggestion must not be null.</string>
+
+    <string name="submit_success_tips">Submit Success.</string>
+
+    <string name="submit_failed_tips">Submit failed.NetWork is not worked.</string>
 </resources>

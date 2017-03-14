@@ -10,4 +10,17 @@
         <item>说明</item>
     </string-array>
 
+    <string name="explain_text">\u0020\u0020\u0020\u0020由于个人想象力的局限性,可能会使得我的这个app的界面不是太美观,如果大家对这个app有什么功能或者界面的要求或者建议,希望大家能在将您的反馈提交给我，我会尽最大可能修改完善.</string>
+
+
+    <string name="submit_text">我的看法</string>
+    <string name="submit_title_text">请输入您的建议</string>
+    <string name="submit_ensure_text">提交</string>
+    <string name="submit_cancel_text">取消</string>
+    <string name="submit_edit_tips">字数限定在100以内.</string>
+
+    <string name="no_message_tips">建议内容不能为空.</string>
+
+    <string name="submit_success_tips">提交成功.</string>
+    <string name="submit_failed_tips">提交失败.网络异常!</string>
 </resources>

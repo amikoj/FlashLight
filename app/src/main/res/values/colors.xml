@@ -4,6 +4,8 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
+    <color name="normalTextColor">#436EEE</color>
+
     <color name="background">#dd000000</color>
     <color name="timer_text_color">#ffffff</color>
 

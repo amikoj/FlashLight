@@ -10,7 +10,7 @@ public class LogUtils {
 
     private final static String TAG=LogUtils.class.getPackage().getName();
 
-    private volatile static  boolean isDebug=true;
+    private volatile static  boolean isDebug=false;
 
 
     public static void setDebug(String msg){

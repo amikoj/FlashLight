@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_margin="10dip"
+
+    android:background="#aa87CEFF"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:text="@string/submit_title_text"
+        android:textColor="@color/normalTextColor"
+        android:paddingTop="10dip"
+        android:paddingLeft="10dip"
+        android:textSize="22sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+
+    <EditText
+        android:id="@+id/message"
+
+        android:background="#ffffff"
+        android:maxLength="100"
+        android:layout_margin="10dip"
+        android:padding="10dip"
+        android:textCursorDrawable="@null"
+        android:typeface="monospace"
+        android:gravity="top"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:hint="@string/submit_edit_tips"
+        android:textColor="@android:color/black"
+        android:layout_width="match_parent"
+        android:layout_height="200dip" />
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="20dip"
+        android:paddingLeft="10dip"
+        android:layout_marginBottom="20dip"
+        android:layout_height="wrap_content">
+
+
+        <Button
+            android:textSize="20sp"
+            android:text="@string/submit_cancel_text"
+            android:id="@+id/submit_cancel"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/customer_submit_button"
+            android:layout_marginRight="10dip"
+            android:textColor="@drawable/submit_textview_color_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+
+
+        <Button
+            android:id="@+id/submit"
+            android:textSize="20sp"
+            android:text="@string/submit_ensure_text"
+            android:background="@drawable/customer_submit_button"
+            android:layout_marginRight="10dip"
+            android:textColor="@drawable/submit_textview_color_style"
+            android:layout_toLeftOf="@id/submit_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+    </RelativeLayout>
+
+</LinearLayout>
