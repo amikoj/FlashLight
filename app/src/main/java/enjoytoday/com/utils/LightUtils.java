@@ -13,7 +13,6 @@ import android.view.WindowManager;
 
 public class LightUtils {
 
-    private static   Activity activity;
 
     /**
      * 获取屏幕的亮度

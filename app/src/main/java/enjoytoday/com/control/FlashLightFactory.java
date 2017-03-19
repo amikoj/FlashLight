@@ -12,8 +12,14 @@ public class FlashLightFactory {
 
     private static FlashLight flashLight;
 
-    public static FlashLight creatFlashLight(){
-        if (Build.VERSION.SDK_INT>23){
+
+    /**
+     *
+     * @return
+     * flashlight 兼容6.0,7.0
+     */
+    public static FlashLight createFlashLight(){
+        if (Build.VERSION.SDK_INT>=23){
             flashLight=new ControlUtils1();
         }else {
             flashLight=new ControlUtils2();

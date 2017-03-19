@@ -4,15 +4,12 @@ import android.app.Activity;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.BroadcastReceiver;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,15 +17,11 @@ import android.os.Message;
 
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
@@ -37,26 +30,32 @@ import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.umeng.analytics.MobclickAgent;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.jar.Manifest;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import enjoytoday.com.control.FlashLight;
 import enjoytoday.com.control.FlashLightFactory;
 import enjoytoday.com.control.LambStateChangeListener;
-import enjoytoday.com.utils.DeivceUtils;
+import enjoytoday.com.dao.HttpResponseListener;
+import enjoytoday.com.dao.RequestMethod;
+import enjoytoday.com.utils.HttpUtils;
 import enjoytoday.com.utils.LightUtils;
+import enjoytoday.com.utils.NetWorkUtils;
 import enjoytoday.com.views.Image3DSwitchView;
 import enjoytoday.com.views.SwitchButton;
 
 public class MainActivity extends Activity implements LambStateChangeListener, SwitchButton.OnSwitchChangeListener {
 
 
-    protected final int TIMER_CHANGED_TICK = 10000;
+
     private FlashLight flashLight;
     private ImageView controlImageView;
 //    private TimerChangedReceiver timerChangedReceiver;
@@ -81,13 +80,17 @@ public class MainActivity extends Activity implements LambStateChangeListener, S
      */
     private GoogleApiClient client;
 
-    private final static int SUBMIT_MESSAGE_RESPONES=10000;
+    private final static int SUBMIT_MESSAGE_RESPONSE=10000;
+    private final int EMAIL_PATTERN_MATTER_FAILED=100001;
 
     private Handler mHandler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
-            if (msg.what==SUBMIT_MESSAGE_RESPONES){
+            if (msg.what==SUBMIT_MESSAGE_RESPONSE){
                 Toast.makeText(MainActivity.this,msg.obj.toString(),Toast.LENGTH_LONG).show();
+            }else if (msg.what==EMAIL_PATTERN_MATTER_FAILED){
+                Toast.makeText(MainActivity.this,MainActivity.this.getResources().getString(R.string.email_not_valid),Toast.LENGTH_LONG).show();
+
             }
         }
     };
@@ -102,6 +105,21 @@ public class MainActivity extends Activity implements LambStateChangeListener, S
         SimpleDateFormat simpleDataFormat = new SimpleDateFormat("HH:mm");
         Date date = new Date(times);
         return simpleDataFormat.format(date);
+    }
+
+
+    /**
+     * 清除输入提交的所有文本
+     */
+    private void formateFeedBack(){
+
+        if (messageEditText!=null){
+            messageEditText.setText("");
+        }
+        if (email!=null){
+            email.setText("");
+        }
+
     }
 
 
@@ -138,11 +156,9 @@ public class MainActivity extends Activity implements LambStateChangeListener, S
         switchTab.setOnSwitchChangeListener(this);
 
         setVisibleView(switchTab.getCurrentTab());
-//        timerChangedReceiver = new TimerChangedReceiver(MainActivity.this);
-        flashLight = FlashLightFactory.creatFlashLight();
+        flashLight = FlashLightFactory.createFlashLight();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Intent.ACTION_TIME_TICK);
-//        registerReceiver(timerChangedReceiver, intentFilter);
 
         if (flashLight != null) {
             flashLight.setLambStateChangeListener(MainActivity.this);
@@ -250,6 +266,7 @@ public class MainActivity extends Activity implements LambStateChangeListener, S
     private EditText messageEditText;
     private Button submitButton;
     private Button submitCancelButton;
+    private EditText email;
     private SubmitOnClickListener submitOnClickListener;
 
     private void submitMessage(Context context) {
@@ -262,6 +279,8 @@ public class MainActivity extends Activity implements LambStateChangeListener, S
             messageEditText = (EditText) dialog.findViewById(R.id.message);
             submitButton = (Button) dialog.findViewById(R.id.submit);
             submitCancelButton = (Button) dialog.findViewById(R.id.submit_cancel);
+            email= (EditText) dialog.findViewById(R.id.email);
+
             submitButton.setOnClickListener(submitOnClickListener);
             submitCancelButton.setOnClickListener(submitOnClickListener);
             dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
@@ -293,46 +312,29 @@ public class MainActivity extends Activity implements LambStateChangeListener, S
                         LogUtils.setDebug("UNKNOWN ERROR.");
                         MainActivity.this.finish();
                     }
-                    new Thread(){
+
+                    FlashLightApplication.application.getHttpExecutorService().submit(new Runnable() {
                         @Override
                         public void run() {
                             //put message to server.
-                            Map<String,String> params=new ConcurrentHashMap<String, String>();
-                            String model= DeivceUtils.getModel();
-                            if (!TextUtils.isEmpty(model)){
-                                params.put("model",model);
-                            }
-                            String deviceId=DeivceUtils.getDeviceId(MainActivity.this);
-                            if (!TextUtils.isEmpty(deviceId)){
-                                params.put("deviceId",deviceId);
-                            }
-                            String manufacturers=DeivceUtils.getManufacturers();
-
-                            if (!TextUtils.isEmpty(manufacturers)){
-                                params.put("manufacturers",manufacturers);
-                            }
-                            String version=DeivceUtils.getAppVersion(MainActivity.this);
-                            if (TextUtils.isEmpty(version)) {
-                                params.put("version",version);
+                            Map<String,String> params=HttpUtils.getBasicRequestMap(MainActivity.this.getApplicationContext());
+                            if (!TextUtils.isEmpty(message)){
+                                    params.put("feedback", message);
                             }
 
-                            String channel=DeivceUtils.getChannel(MainActivity.this);
-                            if (!TextUtils.isEmpty(channel)){
-                                params.put("channel",channel);
-                            }
-
-                            String pkgName=MainActivity.this.getPackageName();
-                            if (!TextUtils.isEmpty(pkgName)){
-                                params.put("pkg_name",MainActivity.this.getPackageName());
-                            }
-
-                            if (!TextUtils.isEmpty(message)) {
-                                params.put("feedback", message);
+                            String emailNumber=email.getText().toString().trim();
+                            if (email!=null && emailNumber.length()>0){
+                                Pattern pattern=Pattern.compile("^\\s*\\w+(?:\\.{0,1}[\\w-]+)*@[a-zA-Z0-9]+(?:[-.][a-zA-Z0-9]+)*\\.[a-zA-Z]+\\s*$");
+                                Matcher matcher=pattern.matcher(emailNumber);
+                               if (matcher.matches()) {
+                                   params.put("mail",emailNumber);
+                                }else {
+                                     Message.obtain(mHandler,EMAIL_PATTERN_MATTER_FAILED).sendToTarget();
+                                }
                             }
                             postMessageToServer(params);
                         }
-                    }.start();
-
+                    });
                 }
             }else if (v.getId()==R.id.submit_cancel){
                 if (dialog!=null){
@@ -351,80 +353,26 @@ public class MainActivity extends Activity implements LambStateChangeListener, S
 
 
 
-
-
-
-
-
-    private static final String postUrl="http://www.enjoytoday.cn:8080/web/postFeedback";
     /**
      * 上传数据到后台服务器
      * @param params
      */
     private void postMessageToServer(Map<String,String> params){
-        HttpURLConnection httpURLConnection;
-        URL url;
-        try{
-
-            url=new URL(postUrl);
-            httpURLConnection= (HttpURLConnection) url.openConnection();
-            httpURLConnection.setDoOutput(true);
-            httpURLConnection.setRequestMethod("POST");
-            httpURLConnection.setConnectTimeout(10*1000);
-            httpURLConnection.setRequestProperty("Charset", "UTF-8");
-
-
-            LogUtils.setDebug("map toString:"+params.toString());
-            for (Map.Entry<String,String> entry:params.entrySet()){
-                if (entry.getKey()==null || entry.getKey().length()==0 || entry.getValue()==null || entry.getValue().length()==0){
-                    continue;
+        HttpUtils.sendHttpMessage(new HttpResponseListener() {
+            @Override
+            public void callBack(int responseCode, String response, String content) {
+                String tips="";
+                if (responseCode== HttpURLConnection.HTTP_OK || NetWorkUtils.isNetworkAvailable(MainActivity.this)){
+                    tips=MainActivity.this.getResources().getString(R.string.submit_success_tips);
+                    formateFeedBack();
+                }else {
+                  tips=MainActivity.this.getResources().getString(R.string.submit_failed_tips);
                 }
-                httpURLConnection.setRequestProperty(entry.getKey(),entry.getValue());
+                mHandler.sendMessageDelayed(Message.obtain(mHandler,SUBMIT_MESSAGE_RESPONSE,tips),600);
+
             }
-
-            int code=httpURLConnection.getResponseCode();
-            if (code==200){
-                Message.obtain(mHandler,SUBMIT_MESSAGE_RESPONES,MainActivity.this.getResources().getString(R.string.submit_success_tips)).sendToTarget();
-            }
-            Message.obtain(mHandler,SUBMIT_MESSAGE_RESPONES,MainActivity.this.getResources().getString(R.string.submit_success_tips)).sendToTarget();
-        }catch (Exception e){
-            e.printStackTrace();
-            if (isNetworkAvailable(MainActivity.this)){
-                Message.obtain(mHandler,SUBMIT_MESSAGE_RESPONES,MainActivity.this.getResources().getString(R.string.submit_success_tips)).sendToTarget();
-            }else {
-                Message.obtain(mHandler,SUBMIT_MESSAGE_RESPONES,MainActivity.this.getResources().getString(R.string.submit_failed_tips)).sendToTarget();
-            }
-        }
-
-
-
-
+        },params, HttpUtils.HttpRequestDomain.POST_MESSAGE, RequestMethod.POST);
     }
-
-
-
-
-    public static boolean isNetworkAvailable(Context context) {
-        ConnectivityManager connectivity = (ConnectivityManager) context
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivity != null) {
-            NetworkInfo info = connectivity.getActiveNetworkInfo();
-            if (info != null && info.isConnected())
-            {
-                // 当前网络是连接的
-                if (info.getState() == NetworkInfo.State.CONNECTED)
-                {
-                    // 当前所连接的网络可用
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-
-
-
 
 
     @Override

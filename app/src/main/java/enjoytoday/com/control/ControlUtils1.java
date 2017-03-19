@@ -50,7 +50,6 @@ public class ControlUtils1 extends FlashLight {
             if (isSupport) {
                 cameraManager.setTorchMode(CameraCharacteristics.LENS_FACING_FRONT + "", true);
                 if (this.lambStateChangeListener!=null){
-//                    LogUtils.setDebug("get lambestateChangeListener state=1");
                     this.lambStateChangeListener.onStateChanged(1,this);
                 }
                 sharedPreferences.edit().putBoolean("flash_mode",true).commit();

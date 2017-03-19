@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">手电筒</string>
+    <string name="app_name">爱生活手电筒</string>
     <string name="led_text">亮度</string>
     <string name="screen_light_text">屏保照明</string>
 
@@ -20,7 +20,11 @@
     <string name="submit_edit_tips">字数限定在100以内.</string>
 
     <string name="no_message_tips">建议内容不能为空.</string>
-
     <string name="submit_success_tips">提交成功.</string>
     <string name="submit_failed_tips">提交失败.网络异常!</string>
+    <string name="email_text">邮箱</string>
+    <string name="email_hint_text">选填</string>
+
+    <string name="email_not_valid">您输入的邮箱无效,但仍然感謝您的反馈!</string>
+
 </resources>

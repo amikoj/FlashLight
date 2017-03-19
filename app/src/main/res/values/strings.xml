@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FlashLight</string>
+    <string name="app_name">EnjoyToday FlashLight</string>
 
     <string name="led_text">LIGHT</string>
     <string name="screen_light_text">SCREEN</string>
@@ -28,4 +28,13 @@
     <string name="submit_success_tips">Submit Success.</string>
 
     <string name="submit_failed_tips">Submit failed.NetWork is not worked.</string>
+
+
+    <string name="email_text">Email</string>
+
+    <string name="email_hint_text">Optional</string>
+    
+    
+    <string name="email_not_valid">The mailbox you entered is invalid, but thank you for your feedback!</string>
+
 </resources>
